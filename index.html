@@ -3,540 +3,542 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Adivina el Escudo: Versión Uruguaya</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Teko:wght@600;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <title>Adivina el escudo: Versión Uruguaya</title>
+  
+  <!-- Logo / Favicon (Cambiá 'logo.png' por tu archivo o URL) -->
+  <link rel="icon" type="image/png" href="logo.png">
+
   <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
     body {
-      font-family: 'Inter', sans-serif;
-      background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
+      background: linear-gradient(135deg, #0d1b2a, #1b263b);
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
     }
-    .font-teko {
-      font-family: 'Teko', sans-serif;
+
+    .card {
+      background: #101d2d;
+      border: 2px solid #00b4d8;
+      border-radius: 16px;
+      padding: 25px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      text-align: center;
+      position: relative;
     }
-    .glow-celeste {
-      box-shadow: 0 0 25px rgba(56, 189, 248, 0.35);
+
+    h1 {
+      color: #90e0ef;
+      font-size: 1.8rem;
+      margin-top: 0;
+      margin-bottom: 5px;
     }
-    .glow-gold {
-      box-shadow: 0 0 25px rgba(234, 179, 8, 0.35);
+
+    p.subtitle {
+      color: #a8dadc;
+      font-size: 0.95rem;
+      margin-bottom: 20px;
     }
-    .animate-pulse-fast {
-      animation: pulse 0.6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+
+    /* User Profile Bar */
+    .user-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: #1b263b;
+      padding: 8px 12px;
+      border-radius: 30px;
+      margin-bottom: 15px;
+      font-size: 0.85rem;
     }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
+
+    .user-bar img {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
     }
+
+    .timer-container {
+      background: #1b263b;
+      height: 10px;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 15px;
+    }
+
+    .timer-bar {
+      height: 100%;
+      background: #00b4d8;
+      width: 100%;
+      transition: width 1s linear;
+    }
+
+    .clues-container {
+      background: #1b263b;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .clue {
+      margin: 10px 0;
+      font-size: 1rem;
+      line-height: 1.4;
+      color: #e0e1dd;
+    }
+
+    .clue span {
+      color: #00b4d8;
+      font-weight: bold;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 12px 15px;
+      border-radius: 8px;
+      border: 1px solid #415a77;
+      background: #0d1b2a;
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    input[type="text"]:focus {
+      border-color: #00b4d8;
+    }
+
+    button {
+      background: #00b4d8;
+      color: #0d1b2a;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    button:hover {
+      background: #90e0ef;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .btn-google {
+      background: #ffffff;
+      color: #333;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 18px;
+      font-size: 0.95rem;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+
+    .btn-google img {
+      width: 18px;
+      height: 18px;
+    }
+
+    .message {
+      font-weight: bold;
+      font-size: 1.1rem;
+      min-height: 28px;
+      margin-top: 10px;
+    }
+
+    .correct { color: #52b788; }
+    .incorrect { color: #e63946; }
+
+    .score-board {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      font-size: 0.9rem;
+      color: #a8dadc;
+      border-top: 1px solid #415a77;
+      padding-top: 15px;
+    }
+
+    /* Leaderboard Table */
+    .leaderboard-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    .leaderboard-table th, .leaderboard-table td {
+      padding: 8px;
+      border-bottom: 1px solid #415a77;
+    }
+
+    .leaderboard-table th {
+      color: #00b4d8;
+    }
+
+    .hidden { display: none !important; }
   </style>
+
+  <!-- Firebase Modular SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // ⚠️ REEMPLAZÁ CON TUS CLAVES DE FIREBASE CONSOLE
+    const firebaseConfig = {
+      apiKey: "TU_API_KEY",
+      authDomain: "TU_PROYECTO.firebaseapp.com",
+      projectId: "TU_PROYECTO_ID",
+      storageBucket: "TU_PROYECTO.appspot.com",
+      messagingSenderId: "1234567890",
+      appId: "1:1234567890:web:abcdef123456"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    let currentUser = null;
+
+    // Elementos del DOM
+    const googleBtn = document.getElementById('google-btn');
+    const userBar = document.getElementById('user-bar');
+    const userNameEl = document.getElementById('user-name');
+    const userPicEl = document.getElementById('user-pic');
+
+    // Login Event
+    googleBtn.addEventListener('click', async () => {
+      try {
+        await signInWithPopup(auth, provider);
+      } catch (err) {
+        console.error("Error al iniciar sesión:", err);
+      }
+    });
+
+    // Observer de autenticación
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user;
+        userNameEl.textContent = user.displayName;
+        userPicEl.src = user.photoURL || 'https://via.placeholder.com/28';
+        userBar.classList.remove('hidden');
+        googleBtn.classList.add('hidden');
+      } else {
+        currentUser = null;
+        userBar.classList.add('hidden');
+        googleBtn.classList.remove('hidden');
+      }
+    });
+
+    // Guardar récord en Firestore
+    window.saveScoreToFirebase = async function(finalScore) {
+      if (!currentUser) return;
+
+      const userRef = doc(db, "scores", currentUser.uid);
+      const docSnap = await getDoc(userRef);
+
+      let record = finalScore;
+      if (docSnap.exists()) {
+        const prevScore = docSnap.data().highScore || 0;
+        if (finalScore <= prevScore) {
+          record = prevScore; // Mantener el récord más alto
+        }
+      }
+
+      await setDoc(userRef, {
+        name: currentUser.displayName,
+        photo: currentUser.photoURL,
+        highScore: record,
+        updatedAt: new Date()
+      }, { merge: true });
+    };
+
+    // Obtener Top Récords
+    window.loadLeaderboard = async function() {
+      const q = query(collection(db, "scores"), orderBy("highScore", "desc"), limit(5));
+      const querySnapshot = await getDocs(q);
+      
+      let html = '<table class="leaderboard-table"><tr><th>#</th><th>Jugador</th><th>Puntos</th></tr>';
+      let i = 1;
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        html += `<tr>
+          <td>${i++}</td>
+          <td>${data.name}</td>
+          <td><strong>${data.highScore}</strong></td>
+        </tr>`;
+      });
+      html += '</table>';
+      return html;
+    };
+  </script>
 </head>
-<body class="min-h-screen text-slate-100 flex items-center justify-center p-4 selection:bg-sky-500 selection:text-black">
+<body>
 
-  <div class="w-full max-w-xl bg-slate-900/90 border-2 border-sky-500/40 rounded-3xl p-6 md:p-8 backdrop-blur-xl shadow-2xl relative overflow-hidden my-auto">
-    <!-- Efedcto de brillo ambiental en fondo -->
-    <div class="absolute -top-24 -left-24 w-48 h-48 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
-    <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="card">
+    <h1>Adivina el escudo: Versión Uruguaya</h1>
+    <p class="subtitle">12 Preguntas de la Primera División</p>
 
-    <!-- 1. PANTALLA DE INICIO -->
-    <div id="start-screen" class="text-center py-6 flex flex-col items-center">
-      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-sky-950/80 border border-sky-500/30 text-sky-400 text-xs font-bold tracking-widest uppercase mb-6">
-        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zM9 13V7l5 3-5 3z"/></svg>
-        Fútbol Uruguayo • Liga Profesional
-      </div>
+    <!-- Usuario autenticado -->
+    <div id="user-bar" class="user-bar hidden">
+      <img id="user-pic" src="" alt="Perfil">
+      <span id="user-name"></span>
+    </div>
 
-      <!-- Icono de Escudo Uruguayo -->
-      <div class="w-28 h-28 bg-gradient-to-tr from-sky-600 via-sky-400 to-amber-400 p-1 rounded-2xl mb-6 shadow-xl shadow-sky-950/50 flex items-center justify-center transform -rotate-3 hover:rotate-0 transition-transform duration-300">
-        <div class="w-full h-full bg-slate-950 rounded-[14px] flex flex-col items-center justify-center p-3 text-center">
-          <svg class="w-12 h-12 text-sky-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-          </svg>
-          <span class="text-[10px] font-black uppercase text-amber-400 tracking-wider">AUF 1ª Div</span>
-        </div>
-      </div>
+    <!-- Botón de Login -->
+    <button id="google-btn" class="btn-google">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+      Iniciar sesión con Google
+    </button>
 
-      <h1 class="font-teko text-5xl md:text-6xl font-bold uppercase tracking-wide leading-none text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-white to-amber-300 mb-3 drop-shadow">
-        Adivina el escudo
-      </h1>
-      <p class="text-amber-400 font-teko text-2xl tracking-widest uppercase mb-6 drop-shadow">VERSIÓN URUGUAYA</p>
-
-      <p class="text-slate-300 text-sm md:text-base max-w-md mx-auto mb-8 leading-relaxed">
-        Demostrá cuánto sabés del fútbol charrúa. Tenés <strong class="text-sky-400">12 clubes</strong> para adivinar mediante <strong class="text-sky-400">2 pistas</strong> por equipo y con un temporizador de <strong class="text-amber-400">15 segundos</strong> por ronda.
+    <!-- Pantalla de Inicio -->
+    <div id="start-screen">
+      <p style="color:#e0e1dd; margin-bottom:20px;">
+        Iniciá sesión para guardar tus récords o jugá en modo invitado.
       </p>
-
-      <button id="btn-play" class="w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-400 hover:to-sky-500 text-slate-950 font-black text-xl rounded-2xl uppercase tracking-wider transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg shadow-sky-500/30 glow-celeste flex items-center justify-center gap-3">
-        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-        JUGAR AHORA
-      </button>
+      <button onclick="startGame()">▶ ¡JUGAR!</button>
     </div>
 
-    <!-- 2. PANTALLA DEL JUEGO -->
-    <div id="game-screen" class="hidden flex-col">
-      <!-- Encabezado de Estado (Puntaje, Ronda, Temporizador) -->
-      <div class="flex items-center justify-between bg-slate-950/80 p-4 rounded-2xl border border-slate-800 mb-6">
-        <div>
-          <span class="text-xs text-slate-400 uppercase font-bold tracking-wider block">Puntaje</span>
-          <span id="score-display" class="font-teko text-3xl font-bold text-amber-400 leading-none">0</span>
-        </div>
-        
-        <div class="text-center">
-          <span class="text-xs text-slate-400 uppercase font-bold tracking-wider block">Club</span>
-          <span id="round-display" class="font-teko text-2xl font-bold text-sky-400 leading-none">1 / 12</span>
-        </div>
-
-        <div class="text-right">
-          <span class="text-xs text-slate-400 uppercase font-bold tracking-wider block">Tiempo</span>
-          <div class="flex items-center gap-1.5 justify-end">
-            <svg id="timer-icon" class="w-5 h-5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            <span id="timer-display" class="font-teko text-3xl font-bold text-sky-400 leading-none">15</span>
-          </div>
-        </div>
+    <!-- Pantalla de Juego -->
+    <div id="game-screen" class="hidden">
+      <div class="timer-container">
+        <div id="timer-bar" class="timer-bar"></div>
       </div>
 
-      <!-- Barra de Progreso del Tiempo -->
-      <div class="w-full bg-slate-800 h-2 rounded-full mb-6 overflow-hidden">
-        <div id="timer-bar" class="bg-gradient-to-r from-sky-400 to-amber-400 h-full w-full transition-all duration-1000 ease-linear"></div>
+      <div class="clues-container">
+        <div class="clue"><span>Pista 1:</span> <span id="clue1">---</span></div>
+        <div class="clue"><span>Pista 2:</span> <span id="clue2">---</span></div>
       </div>
 
-      <!-- Pistas del Club -->
-      <div class="space-y-4 mb-6">
-        <div class="bg-slate-950/60 border border-slate-800 p-4 rounded-2xl relative">
-          <span class="absolute -top-3 left-4 bg-sky-500 text-slate-950 text-[11px] font-black uppercase px-2.5 py-0.5 rounded-full tracking-wider">
-            Pista 1 • Escudo y Colores
-          </span>
-          <p id="clue1-text" class="text-slate-200 text-sm md:text-base pt-1 leading-relaxed">Cargando pista...</p>
-        </div>
-
-        <div class="bg-slate-950/60 border border-slate-800 p-4 rounded-2xl relative">
-          <span class="absolute -top-3 left-4 bg-amber-500 text-slate-950 text-[11px] font-black uppercase px-2.5 py-0.5 rounded-full tracking-wider">
-            Pista 2 • Estadio / Barrio / Historia
-          </span>
-          <p id="clue2-text" class="text-slate-200 text-sm md:text-base pt-1 leading-relaxed">Cargando pista...</p>
-        </div>
+      <div class="input-group">
+        <input type="text" id="user-input" placeholder="Escribí el club..." autocomplete="off">
+        <button onclick="checkAnswer()">Enviar</button>
       </div>
 
-      <!-- Formulario de Respuesta -->
-      <div class="space-y-3 mb-4">
-        <div class="relative">
-          <input 
-            type="text" 
-            id="answer-input" 
-            placeholder="Escribí el nombre del club..." 
-            autocomplete="off"
-            class="w-full bg-slate-950 border-2 border-slate-700 focus:border-sky-400 rounded-2xl px-4 py-3.5 text-white placeholder-slate-500 text-base outline-none transition-colors duration-200"
-          >
-        </div>
-        
-        <button 
-          id="btn-submit" 
-          class="w-full py-3.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-lg rounded-2xl uppercase tracking-wider transition-all duration-200 active:scale-[0.99] flex items-center justify-center gap-2"
-        >
-          <span>ENVIAR RESPUESTA</span>
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-        </button>
-      </div>
+      <div id="message" class="message"></div>
 
-      <!-- Mensaje de Feedback -->
-      <div id="feedback-msg" class="h-8 text-center font-bold text-sm md:text-base flex items-center justify-center transition-all duration-200"></div>
+      <div class="score-board">
+        <span>Puntaje: <strong id="score">0</strong></span>
+        <span>Tiempo: <strong id="time-text">15s</strong></span>
+        <span>Ronda: <strong id="round">1</strong>/12</span>
+      </div>
     </div>
 
-    <!-- 3. PANTALLA FINAL -->
-    <div id="end-screen" class="hidden text-center py-6 flex flex-col items-center">
-      <div class="w-20 h-20 bg-amber-500/20 border-2 border-amber-400 rounded-2xl flex items-center justify-center mb-4 text-amber-400 shadow-lg shadow-amber-500/20">
-        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+    <!-- Pantalla Final -->
+    <div id="end-screen" class="hidden">
+      <h2>¡Juego Terminado!</h2>
+      <p style="font-size: 1.2rem; color:#90e0ef;">Obtuviste <strong id="final-score">0</strong> puntos.</p>
+
+      <div id="leaderboard-container">
+        <h3 style="color:#00b4d8; margin-top:20px;">🏆 Mejores Récords</h3>
+        <div id="leaderboard-content">Cargando récords...</div>
       </div>
 
-      <h2 class="font-teko text-5xl font-bold uppercase tracking-wide text-white mb-1">¡Partida Finalizada!</h2>
-      <p class="text-slate-400 text-sm mb-6">Demostraste tu nivel sobre el fútbol uruguayo</p>
-
-      <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-6 w-full max-w-sm mb-8 space-y-3">
-        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-          <span class="text-slate-400 text-sm">Puntaje Final:</span>
-          <span id="final-score" class="font-teko text-4xl font-bold text-amber-400">0</span>
-        </div>
-        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-          <span class="text-slate-400 text-sm">Aciertos:</span>
-          <span id="final-correct" class="font-bold text-sky-400 text-lg">0 / 12</span>
-        </div>
-        <div class="flex justify-between items-center">
-          <span class="text-slate-400 text-sm">Efectividad:</span>
-          <span id="final-accuracy" class="font-bold text-white text-lg">0%</span>
-        </div>
-      </div>
-
-      <button id="btn-restart" class="w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-400 hover:to-sky-500 text-slate-950 font-black text-xl rounded-2xl uppercase tracking-wider transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg shadow-sky-500/30 flex items-center justify-center gap-3">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-        VOLVER A JUGAR
-      </button>
+      <button style="margin-top:20px;" onclick="restartGame()">Jugar de nuevo</button>
     </div>
   </div>
 
   <script>
-    // --- EFECTOS DE SONIDO SINTETIZADOS CON WEB AUDIO API ---
-    class SoundController {
-      constructor() {
-        this.ctx = null;
-      }
+    // Sintetizador Web Audio API (Efectos de Sonido)
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-      init() {
-        if (!this.ctx) {
-          const AudioContext = window.AudioContext || window.webkitAudioContext;
-          this.ctx = new AudioContext();
-        }
-        if (this.ctx.state === 'suspended') {
-          this.ctx.resume();
-        }
-      }
+    function playSound(type) {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
 
-      // Sonido de Acierto / Puntos
-      playCorrect() {
-        this.init();
-        const now = this.ctx.currentTime;
-        const osc1 = this.ctx.createOscillator();
-        const osc2 = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-
-        osc1.type = 'triangle';
-        osc2.type = 'sine';
-
-        // Arpegio alegre en Do Mayor (C5, E5, G5, C6)
-        osc1.frequency.setValueAtTime(523.25, now);
-        osc1.frequency.setValueAtTime(659.25, now + 0.08);
-        osc1.frequency.setValueAtTime(783.99, now + 0.16);
-        osc1.frequency.setValueAtTime(1046.50, now + 0.24);
-
-        osc2.frequency.setValueAtTime(261.63, now);
-        osc2.frequency.setValueAtTime(329.63, now + 0.08);
-        osc2.frequency.setValueAtTime(392.00, now + 0.16);
-        osc2.frequency.setValueAtTime(523.25, now + 0.24);
-
-        gain.gain.setValueAtTime(0.2, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-
-        osc1.connect(gain);
-        osc2.connect(gain);
-        gain.connect(this.ctx.destination);
-
-        osc1.start(now);
-        osc2.start(now);
-        osc1.stop(now + 0.5);
-        osc2.stop(now + 0.5);
-      }
-
-      // Sonido de Error / Tiempo Agotado
-      playWrong() {
-        this.init();
-        const now = this.ctx.currentTime;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-
+      if (type === 'correct') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+        osc.frequency.exponentialRampToValueAtTime(659.25, audioCtx.currentTime + 0.15); // E5
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.3);
+      } else if (type === 'incorrect') {
         osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(160, now);
-        osc.frequency.linearRampToValueAtTime(90, now + 0.3);
-
-        gain.gain.setValueAtTime(0.25, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-
-        osc.start(now);
-        osc.stop(now + 0.35);
-      }
-
-      // Sonido de Tick-Tock
-      playTick(isCritical = false) {
-        this.init();
-        const now = this.ctx.currentTime;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-
-        osc.type = isCritical ? 'square' : 'sine';
-        osc.frequency.setValueAtTime(isCritical ? 880 : 440, now);
-
-        gain.gain.setValueAtTime(isCritical ? 0.15 : 0.05, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
-
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-
-        osc.start(now);
-        osc.stop(now + 0.05);
+        osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.3);
       }
     }
 
-    const sound = new SoundController();
-
-    // --- BASE DE DATOS DE 12 CLUBES DE LA PRIMERA DIVISIÓN DE URUGUAY ---
-    const clubsDatabase = [
-      {
-        names: ["penarol", "peñarol"],
-        clue1: "Escudo con 11 franjas verticales alternadas en amarillo y negro, rematado con 5 estrellas doradas en la parte superior.",
-        clue2: "Su casa es el Estadio Campeón del Siglo. Se lo conoce como el 'Manya' o 'Carbonero'."
-      },
-      {
-        names: ["nacional", "club atletico nacional"],
-        clue1: "Escudo en forma de bolsillo redondeado con tres franjas diagonales en azul, blanco y rojo, con la sigla C.N.de F.",
-        clue2: "Disputa sus partidos en el Gran Parque Central, escenario histórico del primer partido de los Mundiales. Apodado el 'Bolso'."
-      },
-      {
-        names: ["defensor sporting", "defensor"],
-        clue1: "Escudo con fondo violeta distintivo y un faro dorado grabado en el centro junto a las iniciales DSC.",
-        clue2: "Juega como local en el Estadio Luis Franzini en el Parque Rodó. Fue el primer club en romper la hegemonía de los dos grandes en la era profesional (1976)."
-      },
-      {
-        names: ["danubio"],
-        clue1: "Escudo blanco atravesado por una franja negra en diagonal, con las iniciales D.F.C. y estrellas en la franja.",
-        clue2: "Su estadio es Jardines del Hipódromo. Famoso por ser 'La Universidad del Fútbol' debido a su legendaria cantera."
-      },
-      {
-        names: ["liverpool"],
-        clue1: "Escudo azul y negro a franjas verticales con una franja roja horizontal y la sigla L.F.C.",
-        clue2: "Tiene su sede y estadio Belvedere en la zona de la Cuchilla Grande. Apodados los 'Negriazules'."
-      },
-      {
-        names: ["wanderers", "montevideo wanderers"],
-        clue1: "Escudo clásico a franjas verticales blancas y negras con las siglas M.W.F.C. en la parte superior.",
-        clue2: "Su casa es el Parque Alfredo Víctor Viera ubicado en el Prado. Conocidos popularmente como los 'Bohemios'."
-      },
-      {
-        names: ["boston river"],
-        clue1: "Escudo dividido verticalmente combinando los colores verde y rojo, con las siglas B.R.F.C.",
-        clue2: "Fundado en el barrio Barrio Bolívar de Montevideo, se lo conoce históricamente como el equipo 'Sastre'."
-      },
-      {
-        names: ["cerro", "club atletico cerro"],
-        clue1: "Escudo albiceleste a franjas verticales con una silueta representativa del histórico cerro de Montevideo.",
-        clue2: "Su estadio es el Monumental Luis Tróccoli. Mantiene una de las hinchadas más populares de la Villa de Cerro."
-      },
-      {
-        names: ["progreso"],
-        clue1: "Escudo de forma circular/ovalada con intensos colores amarillo y rojo a franjas verticales.",
-        clue2: "Arraigado profundamente en el barrio La Teja, disputa sus partidos en el Estadio Abraham Paladino. Su apodo es 'Gaucho'."
-      },
-      {
-        names: ["deportivo maldonado", "depor maldonado"],
-        clue1: "Escudo de corte moderno que combina franjas rojas y verdes con un diseño marino/costero representativo de su departamento.",
-        clue2: "Equipo del interior del país que juega como local en el Estadio Domingo Burgueño Miguel (El Campus). Apodado el 'Depor'."
-      },
-      {
-        names: ["racing", "racing club de montevideo"],
-        clue1: "Escudo con franjas verticales verdes y blancas y la sigla R.C.M. en el centro.",
-        clue2: "Conocido como la 'Escuelita Sayaguense', su estadio es el Parque Osvaldo Roberto ubicado en el barrio Sayago."
-      },
-      {
-        names: ["river plate", "river"],
-        clue1: "Escudo con franjas verticales rojas y blancas, con las siglas C.A.R.P. en una banda superior negra o blanca.",
-        clue2: "Juega como local en el histórico Parque Federico Omar Saroldi a orillas del Arroyo Miguelete. Apodado el 'Darsenero'."
-      }
+    // 12 Clubes de Primera División
+    const clubs = [
+      { names: ["penarol", "peñarol"], clue1: "Tiene 5 Copas Libertadores y viste de amarillo y negro.", clue2: "Su estadio es el Campeón del Siglo." },
+      { names: ["nacional"], clue1: "Su estadio es el Gran Parque Central.", clue2: "Tiene 3 Copas Intercontinentales y viste de blanco, azul y rojo." },
+      { names: ["defensor sporting", "defensor"], clue1: "Juega en el Estadio Luis Franzini en el Parque Rodó.", clue2: "Viste indumentaria de color violeta." },
+      { names: ["danubio"], clue1: "Juega de local en Jardines del Hipódromo.", clue2: "Camiseta blanca con una franja diagonal negra." },
+      { names: ["liverpool"], clue1: "Su estadio se llama Belvedere en el barrio Cuchilla Grande.", clue2: "Viste franjas verticales azules y negras." },
+      { names: ["wanderers", "montevideo wanderers"], clue1: "Juega en el Parque Alfredo Víctor Viera en el Prado.", clue2: "Su camiseta es a bastones negros y blancos." },
+      { names: ["boston river"], clue1: "Apodado el 'Sastre', suele jugar como local en Florida.", clue2: "Combina los colores verde y rojo." },
+      { names: ["cerro"], clue1: "Su casa es el Estadio Monumental Luis Tróccoli.", clue2: "Camiseta albiceleste a franjas verticales." },
+      { names: ["progreso"], clue1: "Ubicado en el barrio La Teja, juega en el Estadio Abraham Paladino.", clue2: "Viste franjas amarillas y rojas." },
+      { names: ["deportivo maldonado"], clue1: "Equipo del interior, juega en el Estadio Domingo Burgueño Miguel.", clue2: "Sus colores representativos son el rojo y el verde." },
+      { names: ["racing"], clue1: "Conocido como la 'Escuelita Sayaguense'.", clue2: "Juega en el Parque Osvaldo Roberto y viste de verde y blanco." },
+      { names: ["river plate"], clue1: "Su estadio es el Parque Federico Omar Saroldi.", clue2: "Viste camiseta a franjas verticales rojas y blancas." }
     ];
 
-    // --- VARIABLES DE ESTADO ---
-    let currentRound = 0;
+    let currentClubIndex = 0;
     let score = 0;
-    let correctAnswers = 0;
-    let timer = null;
+    let round = 1;
+    let timer;
     let timeLeft = 15;
-    const TIME_PER_ROUND = 15;
 
-    // --- ELEMENTOS DEL DOM ---
-    const startScreen = document.getElementById('start-screen');
-    const gameScreen = document.getElementById('game-screen');
-    const endScreen = document.getElementById('end-screen');
-
-    const btnPlay = document.getElementById('btn-play');
-    const btnSubmit = document.getElementById('btn-submit');
-    const btnRestart = document.getElementById('btn-restart');
-
-    const scoreDisplay = document.getElementById('score-display');
-    const roundDisplay = document.getElementById('round-display');
-    const timerDisplay = document.getElementById('timer-display');
-    const timerBar = document.getElementById('timer-bar');
-    const timerIcon = document.getElementById('timer-icon');
-
-    const clue1Text = document.getElementById('clue1-text');
-    const clue2Text = document.getElementById('clue2-text');
-    const answerInput = document.getElementById('answer-input');
-    const feedbackMsg = document.getElementById('feedback-msg');
-
-    const finalScore = document.getElementById('final-score');
-    const finalCorrect = document.getElementById('final-correct');
-    const finalAccuracy = document.getElementById('final-accuracy');
-
-    // --- NORMALIZADOR DE TEXTO ---
-    function normalize(text) {
-      return text
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "") // Remueve tildes
-        .replace(/[^a-z0-9]/g, "")      // Remueve espacios y caracteres especiales
-        .trim();
+    function normalizeText(text) {
+      return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
     }
 
-    // --- INICIAR JUEGO ---
-    btnPlay.addEventListener('click', () => {
-      sound.init();
-      startScreen.classList.add('hidden');
-      gameScreen.classList.remove('hidden');
-      gameScreen.classList.add('flex');
+    function startGame() {
+      document.getElementById('start-screen').classList.add('hidden');
+      document.getElementById('game-screen').classList.remove('hidden');
+      clubs.sort(() => Math.random() - 0.5);
+      showClub();
+    }
+
+    function showClub() {
+      const club = clubs[currentClubIndex];
+      document.getElementById('clue1').textContent = club.clue1;
+      document.getElementById('clue2').textContent = club.clue2;
+      document.getElementById('user-input').value = '';
+      document.getElementById('message').textContent = '';
+      document.getElementById('user-input').focus();
       
-      // Mezclar preguntas aleatoriamente
-      clubsDatabase.sort(() => Math.random() - 0.5);
-
-      currentRound = 0;
-      score = 0;
-      correctAnswers = 0;
-      scoreDisplay.textContent = '0';
-
-      loadQuestion();
-    });
-
-    // --- CARGAR PREGUNTA / RONDA ---
-    function loadQuestion() {
-      if (currentRound >= 12) {
-        showEndScreen();
-        return;
-      }
-
-      // Reiniciar interfaz de la ronda
-      roundDisplay.textContent = `${currentRound + 1} / 12`;
-      answerInput.value = '';
-      answerInput.disabled = false;
-      btnSubmit.disabled = false;
-      feedbackMsg.textContent = '';
-      feedbackMsg.className = 'h-8 text-center font-bold text-sm md:text-base flex items-center justify-center transition-all duration-200';
-
-      const currentClub = clubsDatabase[currentRound];
-      clue1Text.textContent = currentClub.clue1;
-      clue2Text.textContent = currentClub.clue2;
-
-      // Enfocar input
-      setTimeout(() => answerInput.focus(), 100);
-
-      // Iniciar Temporizador
       startTimer();
     }
 
-    // --- TEMPORIZADOR ---
     function startTimer() {
       clearInterval(timer);
-      timeLeft = TIME_PER_ROUND;
+      timeLeft = 15;
       updateTimerUI();
 
       timer = setInterval(() => {
         timeLeft--;
         updateTimerUI();
 
-        if (timeLeft <= 3 && timeLeft > 0) {
-          sound.playTick(true);
-        } else if (timeLeft > 3) {
-          sound.playTick(false);
-        }
-
         if (timeLeft <= 0) {
           clearInterval(timer);
-          handleTimeOut();
+          playSound('incorrect');
+          handleTimeout();
         }
       }, 1000);
     }
 
     function updateTimerUI() {
-      timerDisplay.textContent = timeLeft;
-      const percentage = (timeLeft / TIME_PER_ROUND) * 100;
-      timerBar.style.width = `${percentage}%`;
-
-      if (timeLeft <= 5) {
-        timerDisplay.classList.remove('text-sky-400');
-        timerDisplay.classList.add('text-rose-500', 'animate-pulse-fast');
-        timerIcon.classList.remove('text-sky-400');
-        timerIcon.classList.add('text-rose-500');
-        timerBar.classList.remove('from-sky-400', 'to-amber-400');
-        timerBar.classList.add('from-rose-500', 'to-red-600');
-      } else {
-        timerDisplay.classList.remove('text-rose-500', 'animate-pulse-fast');
-        timerDisplay.classList.add('text-sky-400');
-        timerIcon.classList.remove('text-rose-500');
-        timerIcon.classList.add('text-sky-400');
-        timerBar.classList.remove('from-rose-500', 'to-red-600');
-        timerBar.classList.add('from-sky-400', 'to-amber-400');
-      }
+      document.getElementById('time-text').textContent = `${timeLeft}s`;
+      const percentage = (timeLeft / 15) * 100;
+      document.getElementById('timer-bar').style.width = `${percentage}%`;
     }
 
-    // --- PROCESAR RESPUESTA ---
-    function submitAnswer() {
-      if (answerInput.disabled) return;
-
-      const userText = normalize(answerInput.value);
-      if (!userText) return;
-
+    function checkAnswer() {
       clearInterval(timer);
-      answerInput.disabled = true;
-      btnSubmit.disabled = true;
+      const input = normalizeText(document.getElementById('user-input').value);
+      const currentClub = clubs[currentClubIndex];
+      const messageEl = document.getElementById('message');
 
-      const currentClub = clubsDatabase[currentRound];
-      const isCorrect = currentClub.names.some(name => normalize(name) === userText);
+      if (!input) {
+        startTimer();
+        return;
+      }
+
+      const isCorrect = currentClub.names.some(name => normalizeText(name) === input);
 
       if (isCorrect) {
-        sound.playCorrect();
-        // Puntaje por acierto + bonus por tiempo restante
-        const pointsGained = 100 + (timeLeft * 10);
-        score += pointsGained;
-        correctAnswers++;
-        scoreDisplay.textContent = score;
-
-        feedbackMsg.textContent = `¡CORRECTO! +${pointsGained} pts`;
-        feedbackMsg.classList.add('text-emerald-400');
+        score += 10;
+        playSound('correct');
+        messageEl.textContent = "¡Correcto! +10 pts";
+        messageEl.className = "message correct";
       } else {
-        sound.playWrong();
-        feedbackMsg.textContent = `¡INCORRECTO! Era: ${currentClub.names[0].toUpperCase()}`;
-        feedbackMsg.classList.add('text-rose-400');
+        playSound('incorrect');
+        messageEl.textContent = `Incorrecto. Era ${currentClub.names[0].toUpperCase()}`;
+        messageEl.className = "message incorrect";
       }
 
-      setTimeout(() => {
-        currentRound++;
-        loadQuestion();
-      }, 2000);
+      document.getElementById('score').textContent = score;
+      nextRound();
     }
 
-    function handleTimeOut() {
-      answerInput.disabled = true;
-      btnSubmit.disabled = true;
-      sound.playWrong();
-
-      const currentClub = clubsDatabase[currentRound];
-      feedbackMsg.textContent = `¡TIEMPO AGOTADO! Era: ${currentClub.names[0].toUpperCase()}`;
-      feedbackMsg.classList.add('text-rose-400');
-
-      setTimeout(() => {
-        currentRound++;
-        loadQuestion();
-      }, 2000);
+    function handleTimeout() {
+      const currentClub = clubs[currentClubIndex];
+      const messageEl = document.getElementById('message');
+      messageEl.textContent = `¡Tiempo agotado! Era ${currentClub.names[0].toUpperCase()}`;
+      messageEl.className = "message incorrect";
+      nextRound();
     }
 
-    // --- EVENT LISTENERS ---
-    btnSubmit.addEventListener('click', submitAnswer);
+    function nextRound() {
+      setTimeout(async () => {
+        currentClubIndex++;
+        if (currentClubIndex < clubs.length) {
+          round++;
+          document.getElementById('round').textContent = round;
+          showClub();
+        } else {
+          await endGame();
+        }
+      }, 1500);
+    }
 
-    answerInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        submitAnswer();
+    async function endGame() {
+      document.getElementById('game-screen').classList.add('hidden');
+      document.getElementById('end-screen').classList.remove('hidden');
+      document.getElementById('final-score').textContent = score;
+
+      // Guardar puntaje en Firebase si hay usuario logueado
+      if (window.saveScoreToFirebase) {
+        await window.saveScoreToFirebase(score);
       }
-    });
 
-    // --- PANTALLA FINAL ---
-    function showEndScreen() {
-      gameScreen.classList.remove('flex');
-      gameScreen.classList.add('hidden');
-      endScreen.classList.remove('hidden');
-
-      finalScore.textContent = score;
-      finalCorrect.textContent = `${correctAnswers} / 12`;
-      const accuracy = Math.round((correctAnswers / 12) * 100);
-      finalAccuracy.textContent = `${accuracy}%`;
+      // Cargar tabla de récords
+      if (window.loadLeaderboard) {
+        const leaderboardHTML = await window.loadLeaderboard();
+        document.getElementById('leaderboard-content').innerHTML = leaderboardHTML;
+      }
     }
 
-    btnRestart.addEventListener('click', () => {
-      endScreen.classList.add('hidden');
-      startScreen.classList.remove('hidden');
+    function restartGame() {
+      score = 0;
+      round = 1;
+      currentClubIndex = 0;
+      document.getElementById('score').textContent = '0';
+      document.getElementById('round').textContent = '1';
+      document.getElementById('end-screen').classList.add('hidden');
+      startGame();
+    }
+
+    document.getElementById('user-input').addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') checkAnswer();
     });
   </script>
 </body>
