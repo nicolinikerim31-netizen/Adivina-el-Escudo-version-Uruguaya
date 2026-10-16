@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Adivina el escudo: Versión Uruguaya</title>
   
-  <!-- Logo / Favicon (Cambiá 'logo.png' por tu archivo o URL) -->
-  <link rel="icon" type="image/png" href="logo.png">
+  <!-- Logo / Favicon oficial de la AUF -->
+  <link rel="icon" type="image/jpeg" href="https://i.pinimg.com/1200x/d0/6e/47/d06e47472600f9da6d35e8caaf90527f.jpg">
 
   <style>
     * {
@@ -209,14 +209,14 @@
     import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // ⚠️ REEMPLAZÁ CON TUS CLAVES DE FIREBASE CONSOLE
+    // Tu configuración oficial de Firebase
     const firebaseConfig = {
-      apiKey: "TU_API_KEY",
-      authDomain: "TU_PROYECTO.firebaseapp.com",
-      projectId: "TU_PROYECTO_ID",
-      storageBucket: "TU_PROYECTO.appspot.com",
-      messagingSenderId: "1234567890",
-      appId: "1:1234567890:web:abcdef123456"
+      apiKey: "AIzaSyBR1oL9oUy7TlAvcesJQVFu9FuqNSohoXA",
+      authDomain: "adivinaelescudouruguayo.firebaseapp.com",
+      projectId: "adivinaelescudouruguayo",
+      storageBucket: "adivinaelescudouruguayo.firebasestorage.app",
+      messagingSenderId: "83952093183",
+      appId: "1:83952093183:web:4f321748c1eb6abffb49ca"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -281,21 +281,25 @@
 
     // Obtener Top Récords
     window.loadLeaderboard = async function() {
-      const q = query(collection(db, "scores"), orderBy("highScore", "desc"), limit(5));
-      const querySnapshot = await getDocs(q);
-      
-      let html = '<table class="leaderboard-table"><tr><th>#</th><th>Jugador</th><th>Puntos</th></tr>';
-      let i = 1;
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        html += `<tr>
-          <td>${i++}</td>
-          <td>${data.name}</td>
-          <td><strong>${data.highScore}</strong></td>
-        </tr>`;
-      });
-      html += '</table>';
-      return html;
+      try {
+        const q = query(collection(db, "scores"), orderBy("highScore", "desc"), limit(5));
+        const querySnapshot = await getDocs(q);
+        
+        let html = '<table class="leaderboard-table"><tr><th>#</th><th>Jugador</th><th>Puntos</th></tr>';
+        let i = 1;
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          html += `<tr>
+            <td>${i++}</td>
+            <td>${data.name}</td>
+            <td><strong>${data.highScore}</strong></td>
+          </tr>`;
+        });
+        html += '</table>';
+        return html;
+      } catch (e) {
+        return '<p style="font-size:0.85rem; color:#a8dadc;">Iniciá sesión con Google para registrar tu récord global.</p>';
+      }
     };
   </script>
 </head>
