@@ -1,0 +1,33 @@
+{
+  "background_color": "#0d1b2a",
+  "dir": "ltr",
+  "display": "standalone",
+  "name": "Adivina el Escudo: Versión Uruguaya",
+  "orientation": "portrait",
+  "scope": "/[https://nicolinikerim31-netizen.github.io/Adivina-el-Escudo-version-Uruguaya/](https://nicolinikerim31-netizen.github.io/Adivina-el-Escudo-version-Uruguaya/))",
+  "short_name": "Escudos UY",
+  "start_url": "/[https://nicolinikerim31-netizen.github.io/Adivina-el-Escudo-version-Uruguaya/index.html](https://nicolinikerim31-netizen.github.io/Adivina-el-Escudo-version-Uruguaya/index.html)",
+  "theme_color": "#0d1b2a",
+  "icons": [
+    {
+      "src": "https://i.pinimg.com/1200x/d0/6e/47/d06e47472600f9da6d35e8caaf90527f.jpg",
+      "type": "image/jpeg",
+      "sizes": "800x800",
+      "isSquare": true,
+      "isPng": false,
+      "isWebp": false,
+      "isJpg": true,
+      "width": 800,
+      "is512x512": false,
+      "is256x256": false,
+      "is192x192": false
+    }
+  ],
+  "description": "Juego de trivia de escudos del fútbol uruguayo.",
+  "lang": "es",
+  "categories": [
+    "entertainment",
+    "games",
+    "sports"
+  ]
+}
