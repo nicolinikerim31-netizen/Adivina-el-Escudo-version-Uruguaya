@@ -1,7 +1,12 @@
+<!DOCTYPE html>
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
+  <!-- Verificación de Google Search Console -->
+  <meta name="google-site-verification" content="JH1tQedRYNaN4jTvl6ojUupn7o3CnK2eAArN6LJKYA0" />
+
   <!-- Título y SEO para Búsquedas en Google -->
   <title>Adivina el escudo: Versión Uruguaya</title>
   <meta name="description" content="Juego de trivia para adivinar los escudos del fútbol uruguayo de Primera y Segunda División. ¡Jugá en solitario o competí contra un bot!">
@@ -392,3 +397,348 @@
     };
   </script>
 </head>
+<body>
+
+  <div class="card">
+    <h1>Adivina el escudo: Versión Uruguaya</h1>
+    <p class="subtitle">Primera & Segunda División de Uruguay</p>
+
+    <!-- Barra de Usuario con Botón de Cerrar Sesión -->
+    <div id="user-bar" class="user-bar hidden">
+      <div class="user-info">
+        <img id="user-pic" src="" alt="Perfil">
+        <span id="user-name"></span>
+      </div>
+      <button id="logout-btn" class="btn-logout">Salir 🚪</button>
+    </div>
+
+    <button id="google-btn" class="btn-google">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+      Iniciar sesión con Google
+    </button>
+
+    <!-- Selección de Modo -->
+    <div id="start-screen">
+      <div class="mode-select">
+        <button onclick="prepareGame('classic')">⚽ Modo Clásico (Trivia Solitario)</button>
+        <button class="btn-secondary" onclick="showBotMenu()">🤖 Modo VS BOT (Rival)</button>
+      </div>
+
+      <div id="bot-menu" class="hidden" style="margin-top: 15px; background: #1b263b; padding: 15px; border-radius: 12px;">
+        <p style="margin-top:0; color:#90e0ef;">Seleccioná Dificultad del BOT:</p>
+        <div class="bot-difficulty">
+          <button style="padding:8px 12px; font-size:0.85rem;" onclick="prepareGame('bot', 'easy')">Fácil 🟢</button>
+          <button style="padding:8px 12px; font-size:0.85rem;" onclick="prepareGame('bot', 'medium')">Medio 🟡</button>
+          <button style="padding:8px 12px; font-size:0.85rem;" onclick="prepareGame('bot', 'hard')">Difícil 🔴</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pantalla de Juego -->
+    <div id="game-screen" class="hidden">
+      <div class="timer-container">
+        <div id="timer-bar" class="timer-bar"></div>
+      </div>
+
+      <div class="clues-container">
+        <div class="clue"><span>Pista 1:</span> <span id="clue1">---</span></div>
+        <div class="clue"><span>Pista 2:</span> <span id="clue2">---</span></div>
+      </div>
+
+      <div class="input-group">
+        <input type="text" id="user-input" placeholder="Escribí el club..." autocomplete="off">
+        <button onclick="checkAnswer()">Enviar</button>
+      </div>
+
+      <div id="message" class="message"></div>
+
+      <div class="score-board">
+        <span>Tú: <strong id="score">0</strong> <span id="bot-score-span" class="hidden">| Bot: <strong id="bot-score">0</strong></span></span>
+        <span>Tiempo: <strong id="time-text">15s</strong></span>
+        <span>Ronda: <strong id="round">1</strong>/12</span>
+      </div>
+    </div>
+
+    <!-- Pantalla Final -->
+    <div id="end-screen" class="hidden">
+      <h2>¡Fin del Partido!</h2>
+      <p id="final-result-text" style="font-size: 1.2rem; color:#90e0ef;">Obtuviste <strong id="final-score">0</strong> puntos.</p>
+
+      <div id="leaderboard-container">
+        <h3 style="color:#00b4d8; margin-top:20px;">🏆 Ránking de Mejores Récords</h3>
+        <div id="leaderboard-content">Cargando tabla...</div>
+      </div>
+
+      <button style="margin-top:20px;" onclick="restartGame()">Volver al Menú</button>
+    </div>
+  </div>
+
+  <script>
+    // Sintetizador Web Audio API
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playSound(type) {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      if (type === 'correct') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(659.25, audioCtx.currentTime + 0.1);
+        osc.frequency.exponentialRampToValueAtTime(783.99, audioCtx.currentTime + 0.25);
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.4);
+      } else if (type === 'incorrect') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(160, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(70, audioCtx.currentTime + 0.3);
+        gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.3);
+      } else if (type === 'bot_score') {
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.2);
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.2);
+      }
+    }
+
+    const clubs = [
+      { names: ["penarol", "peñarol"], clue1: "Tiene 5 Copas Libertadores y viste de amarillo y negro.", clue2: "Su estadio es el Campeón del Siglo." },
+      { names: ["nacional"], clue1: "Su estadio es el Gran Parque Central.", clue2: "Tiene 3 Copas Intercontinentales y viste de blanco, azul y rojo." },
+      { names: ["defensor sporting", "defensor"], clue1: "Juega en el Estadio Luis Franzini en el Parque Rodó.", clue2: "Viste indumentaria de color violeta." },
+      { names: ["danubio"], clue1: "Juega de local en Jardines del Hipódromo.", clue2: "Camiseta blanca con una franja diagonal negra." },
+      { names: ["liverpool"], clue1: "Su estadio se llama Belvedere en el barrio Cuchilla Grande.", clue2: "Viste franjas verticales azules y negras." },
+      { names: ["wanderers", "montevideo wanderers"], clue1: "Juega en el Parque Alfredo Víctor Viera en el Prado.", clue2: "Su camiseta es a bastones negros y blancos." },
+      { names: ["boston river"], clue1: "Apodado el 'Sastre'.", clue2: "Combina los colores verde y rojo." },
+      { names: ["cerro"], clue1: "Su casa es el Estadio Monumental Luis Tróccoli.", clue2: "Camiseta albiceleste a franjas verticales." },
+      { names: ["progreso"], clue1: "Ubicado en el barrio La Teja, juega en el Estadio Abraham Paladino.", clue2: "Viste franjas amarillas y rojas." },
+      { names: ["racing"], clue1: "Conocido como la 'Escuelita Sayaguense'.", clue2: "Juega en el Parque Osvaldo Roberto y viste de verde y blanco." },
+      { names: ["river plate"], clue1: "Su estadio es el Parque Federico Omar Saroldi.", clue2: "Viste camiseta a franjas verticales rojas y blancas." },
+      { names: ["deportivo maldonado"], clue1: "Equipo del interior, juega en el Estadio Domingo Burgueño Miguel.", clue2: "Sus colores representativos son el rojo y el verde." },
+      { names: ["miramar misioneros", "miramar"], clue1: "Conocido como el 'Cebrita'.", clue2: "Viste camiseta a rayas verticales negras y blancas con detalles rojos." },
+      { names: ["albion"], clue1: "Pionero del fútbol uruguayo fundado en 1891.", clue2: "Su camiseta es azul y roja dividida al medio." },
+      { names: ["la luz"], clue1: "Conocido como el 'Merengue' de Aires Puros.", clue2: "Viste camiseta blanca con detalles verdes." },
+      { names: ["juventud", "juventud de las piedras"], clue1: "Representante de la ciudad de Las Piedras, Canelones.", clue2: "Su camiseta es a franjas verticales azules y blancas." },
+      { names: ["plaza colonia", "plaza"], clue1: "Equipo del departamento de Colonia que salió campeón del Clausura.", clue2: "Camiseta con franjas verticales albirrojas y verdes." },
+      { names: ["atenas", "atenas de san carlos"], clue1: "Histórico club de San Carlos, Maldonado.", clue2: "Viste camiseta azul y blanca a franjas." }
+    ];
+
+    let currentClubIndex = 0;
+    let score = 0;
+    let botScore = 0;
+    let round = 1;
+    let timer;
+    let botTimer;
+    let timeLeft = 15;
+    let gameMode = 'classic';
+    let botDifficulty = 'easy';
+
+    function normalizeText(text) {
+      return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+    }
+
+    function showBotMenu() {
+      document.getElementById('bot-menu').classList.toggle('hidden');
+    }
+
+    function prepareGame(mode, difficulty = 'easy') {
+      gameMode = mode;
+      botDifficulty = difficulty;
+
+      document.getElementById('start-screen').classList.add('hidden');
+      document.getElementById('game-screen').classList.remove('hidden');
+
+      if (gameMode === 'bot') {
+        document.getElementById('bot-score-span').classList.remove('hidden');
+      } else {
+        document.getElementById('bot-score-span').classList.add('hidden');
+      }
+
+      clubs.sort(() => Math.random() - 0.5);
+      showClub();
+    }
+
+    function showClub() {
+      const club = clubs[currentClubIndex];
+      document.getElementById('clue1').textContent = club.clue1;
+      document.getElementById('clue2').textContent = club.clue2;
+      document.getElementById('user-input').value = '';
+      document.getElementById('message').textContent = '';
+      document.getElementById('user-input').focus();
+      
+      startTimer();
+
+      if (gameMode === 'bot') {
+        scheduleBotAnswer();
+      }
+    }
+
+    function startTimer() {
+      clearInterval(timer);
+      timeLeft = 15;
+      updateTimerUI();
+
+      timer = setInterval(() => {
+        timeLeft--;
+        updateTimerUI();
+
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          clearTimeout(botTimer);
+          playSound('incorrect');
+          handleTimeout();
+        }
+      }, 1000);
+    }
+
+    function updateTimerUI() {
+      document.getElementById('time-text').textContent = `${timeLeft}s`;
+      const percentage = (timeLeft / 15) * 100;
+      document.getElementById('timer-bar').style.width = `${percentage}%`;
+    }
+
+    function scheduleBotAnswer() {
+      clearTimeout(botTimer);
+
+      let delay;
+      let accuracy;
+
+      if (botDifficulty === 'easy') {
+        delay = Math.floor(Math.random() * 5000) + 7000;
+        accuracy = 0.5;
+      } else if (botDifficulty === 'medium') {
+        delay = Math.floor(Math.random() * 4000) + 4000;
+        accuracy = 0.75;
+      } else {
+        delay = Math.floor(Math.random() * 2500) + 2000;
+        accuracy = 0.95;
+      }
+
+      botTimer = setTimeout(() => {
+        if (timeLeft > 0) {
+          const willSucceed = Math.random() < accuracy;
+          if (willSucceed) {
+            clearInterval(timer);
+            botScore += 10;
+            document.getElementById('bot-score').textContent = botScore;
+            playSound('bot_score');
+
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = `🤖 El Bot respondió correctamente! era ${clubs[currentClubIndex].names[0].toUpperCase()}`;
+            messageEl.className = "message bot-msg";
+
+            nextRound();
+          }
+        }
+      }, delay);
+    }
+
+    function checkAnswer() {
+      clearInterval(timer);
+      clearTimeout(botTimer);
+
+      const input = normalizeText(document.getElementById('user-input').value);
+      const currentClub = clubs[currentClubIndex];
+      const messageEl = document.getElementById('message');
+
+      if (!input) {
+        startTimer();
+        if (gameMode === 'bot') scheduleBotAnswer();
+        return;
+      }
+
+      const isCorrect = currentClub.names.some(name => normalizeText(name) === input);
+
+      if (isCorrect) {
+        score += 10;
+        playSound('correct');
+        messageEl.textContent = "¡Correcto! +10 pts";
+        messageEl.className = "message correct";
+      } else {
+        playSound('incorrect');
+        messageEl.textContent = `Incorrecto. Era ${currentClub.names[0].toUpperCase()}`;
+        messageEl.className = "message incorrect";
+      }
+
+      document.getElementById('score').textContent = score;
+      nextRound();
+    }
+
+    function handleTimeout() {
+      const currentClub = clubs[currentClubIndex];
+      const messageEl = document.getElementById('message');
+      messageEl.textContent = `¡Tiempo agotado! Era ${currentClub.names[0].toUpperCase()}`;
+      messageEl.className = "message incorrect";
+      nextRound();
+    }
+
+    function nextRound() {
+      setTimeout(async () => {
+        currentClubIndex++;
+        if (currentClubIndex < 12 && currentClubIndex < clubs.length) {
+          round++;
+          document.getElementById('round').textContent = round;
+          showClub();
+        } else {
+          await endGame();
+        }
+      }, 1500);
+    }
+
+    async function endGame() {
+      document.getElementById('game-screen').classList.add('hidden');
+      document.getElementById('end-screen').classList.remove('hidden');
+
+      const resultTextEl = document.getElementById('final-result-text');
+
+      if (gameMode === 'bot') {
+        if (score > botScore) {
+          resultTextEl.innerHTML = `🏆 ¡LE GANASTE AL BOT! Quedaste <strong>${score}</strong> a <strong>${botScore}</strong>.`;
+        } else if (score < botScore) {
+          resultTextEl.innerHTML = `🤖 TE GANÓ EL BOT... Quedaron <strong>${score}</strong> a <strong>${botScore}</strong>.`;
+        } else {
+          resultTextEl.innerHTML = `🤝 ¡EMPATE TÉCNICO! Ambas partes hicieron <strong>${score}</strong> puntos.`;
+        }
+      } else {
+        resultTextEl.innerHTML = `Obtuviste <strong id="final-score">${score}</strong> puntos.`;
+      }
+
+      if (window.saveScoreToFirebase) {
+        await window.saveScoreToFirebase(score);
+      }
+
+      if (window.loadLeaderboard) {
+        const leaderboardHTML = await window.loadLeaderboard();
+        document.getElementById('leaderboard-content').innerHTML = leaderboardHTML;
+      }
+    }
+
+    function restartGame() {
+      score = 0;
+      botScore = 0;
+      round = 1;
+      currentClubIndex = 0;
+      document.getElementById('score').textContent = '0';
+      document.getElementById('bot-score').textContent = '0';
+      document.getElementById('round').textContent = '1';
+      document.getElementById('end-screen').classList.add('hidden');
+      document.getElementById('start-screen').classList.remove('hidden');
+      document.getElementById('bot-menu').classList.add('hidden');
+    }
+
+    document.getElementById('user-input').addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') checkAnswer();
+    });
+  </script>
+</body>
+</html>
