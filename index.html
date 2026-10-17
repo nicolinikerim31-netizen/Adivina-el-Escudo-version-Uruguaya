@@ -8,6 +8,20 @@
   <!-- Logo / Favicon oficial de la AUF -->
   <link rel="icon" type="image/jpeg" href="https://i.pinimg.com/1200x/d0/6e/47/d06e47472600f9da6d35e8caaf90527f.jpg">
 
+  <!-- Configuración PWA (Para instalar como App en el Celular) -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="https://i.pinimg.com/1200x/d0/6e/47/d06e47472600f9da6d35e8caaf90527f.jpg">
+  <meta name="theme-color" content="#0d1b2a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Escudos UY">
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+
   <style>
     * {
       box-sizing: border-box;
@@ -50,16 +64,22 @@
       margin-bottom: 20px;
     }
 
+    /* Barra de usuario y botón de logout */
     .user-bar {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 10px;
+      justify-content: space-between;
       background: #1b263b;
-      padding: 8px 12px;
+      padding: 8px 15px;
       border-radius: 30px;
       margin-bottom: 15px;
       font-size: 0.85rem;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .user-bar img {
@@ -67,6 +87,22 @@
       height: 32px;
       border-radius: 50%;
       border: 1.5px solid #00b4d8;
+    }
+
+    .btn-logout {
+      background: #e63946;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-logout:hover {
+      background: #b71c1c;
     }
 
     .timer-container {
@@ -192,7 +228,6 @@
       padding-top: 15px;
     }
 
-    /* Leaderboard Table con Avatar */
     .leaderboard-table {
       width: 100%;
       border-collapse: collapse;
@@ -243,7 +278,7 @@
   <!-- Firebase Modular SDK -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getAuth, signInWithPopup, signOut, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -266,7 +301,9 @@
     const userBar = document.getElementById('user-bar');
     const userNameEl = document.getElementById('user-name');
     const userPicEl = document.getElementById('user-pic');
+    const logoutBtn = document.getElementById('logout-btn');
 
+    // Iniciar Sesión con Google
     googleBtn.addEventListener('click', async () => {
       try {
         await signInWithPopup(auth, provider);
@@ -275,6 +312,16 @@
       }
     });
 
+    // Cerrar Sesión
+    logoutBtn.addEventListener('click', async () => {
+      try {
+        await signOut(auth);
+      } catch (err) {
+        console.error("Error al cerrar sesión:", err);
+      }
+    });
+
+    // Estado del Usuario
     onAuthStateChanged(auth, (user) => {
       if (user) {
         currentUser = user;
@@ -346,10 +393,13 @@
     <h1>Adivina el escudo: Versión Uruguaya</h1>
     <p class="subtitle">Primera & Segunda División de Uruguay</p>
 
-    <!-- Bar de usuario -->
+    <!-- Barra de Usuario con Botón de Cerrar Sesión -->
     <div id="user-bar" class="user-bar hidden">
-      <img id="user-pic" src="" alt="Perfil">
-      <span id="user-name"></span>
+      <div class="user-info">
+        <img id="user-pic" src="" alt="Perfil">
+        <span id="user-name"></span>
+      </div>
+      <button id="logout-btn" class="btn-logout">Salir 🚪</button>
     </div>
 
     <button id="google-btn" class="btn-google">
@@ -357,7 +407,7 @@
       Iniciar sesión con Google
     </button>
 
-    <!-- Pantalla de Selección de Modo -->
+    <!-- Selección de Modo -->
     <div id="start-screen">
       <div class="mode-select">
         <button onclick="prepareGame('classic')">⚽ Modo Clásico (Trivia Solitario)</button>
@@ -414,7 +464,7 @@
   </div>
 
   <script>
-    // Sintetizador Web Audio API (Efectos de Sonido)
+    // Sintetizador Web Audio API
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
     function playSound(type) {
@@ -425,17 +475,15 @@
       gain.connect(audioCtx.destination);
 
       if (type === 'correct') {
-        // Sonido de Acierto / Hinchada (Acorde Triunfal)
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
-        osc.frequency.exponentialRampToValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
-        osc.frequency.exponentialRampToValueAtTime(783.99, audioCtx.currentTime + 0.25); // G5
+        osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(659.25, audioCtx.currentTime + 0.1);
+        osc.frequency.exponentialRampToValueAtTime(783.99, audioCtx.currentTime + 0.25);
         gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
         osc.start();
         osc.stop(audioCtx.currentTime + 0.4);
       } else if (type === 'incorrect') {
-        // Sonido de Error
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(160, audioCtx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(70, audioCtx.currentTime + 0.3);
@@ -444,7 +492,6 @@
         osc.start();
         osc.stop(audioCtx.currentTime + 0.3);
       } else if (type === 'bot_score') {
-        // Sonido cuando el Bot anota
         osc.type = 'square';
         osc.frequency.setValueAtTime(300, audioCtx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.2);
@@ -455,9 +502,7 @@
       }
     }
 
-    // Lista ampliada de Clubes (1ra y 2da División)
     const clubs = [
-      // Primera División
       { names: ["penarol", "peñarol"], clue1: "Tiene 5 Copas Libertadores y viste de amarillo y negro.", clue2: "Su estadio es el Campeón del Siglo." },
       { names: ["nacional"], clue1: "Su estadio es el Gran Parque Central.", clue2: "Tiene 3 Copas Intercontinentales y viste de blanco, azul y rojo." },
       { names: ["defensor sporting", "defensor"], clue1: "Juega en el Estadio Luis Franzini en el Parque Rodó.", clue2: "Viste indumentaria de color violeta." },
@@ -470,8 +515,6 @@
       { names: ["racing"], clue1: "Conocido como la 'Escuelita Sayaguense'.", clue2: "Juega en el Parque Osvaldo Roberto y viste de verde y blanco." },
       { names: ["river plate"], clue1: "Su estadio es el Parque Federico Omar Saroldi.", clue2: "Viste camiseta a franjas verticales rojas y blancas." },
       { names: ["deportivo maldonado"], clue1: "Equipo del interior, juega en el Estadio Domingo Burgueño Miguel.", clue2: "Sus colores representativos son el rojo y el verde." },
-
-      // Segunda División Profesional
       { names: ["miramar misioneros", "miramar"], clue1: "Conocido como el 'Cebrita'.", clue2: "Viste camiseta a rayas verticales negras y blancas con detalles rojos." },
       { names: ["albion"], clue1: "Pionero del fútbol uruguayo fundado en 1891.", clue2: "Su camiseta es azul y roja dividida al medio." },
       { names: ["la luz"], clue1: "Conocido como el 'Merengue' de Aires Puros.", clue2: "Viste camiseta blanca con detalles verdes." },
@@ -487,8 +530,8 @@
     let timer;
     let botTimer;
     let timeLeft = 15;
-    let gameMode = 'classic'; // 'classic' o 'bot'
-    let botDifficulty = 'easy'; // 'easy', 'medium', 'hard'
+    let gameMode = 'classic';
+    let botDifficulty = 'easy';
 
     function normalizeText(text) {
       return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
@@ -554,22 +597,21 @@
       document.getElementById('timer-bar').style.width = `${percentage}%`;
     }
 
-    // Lógica del BOT
     function scheduleBotAnswer() {
       clearTimeout(botTimer);
 
       let delay;
-      let accuracy; // Probabilidad de acierto del Bot
+      let accuracy;
 
       if (botDifficulty === 'easy') {
-        delay = Math.floor(Math.random() * 5000) + 7000; // 7-12s
-        accuracy = 0.5; // 50%
+        delay = Math.floor(Math.random() * 5000) + 7000;
+        accuracy = 0.5;
       } else if (botDifficulty === 'medium') {
-        delay = Math.floor(Math.random() * 4000) + 4000; // 4-8s
-        accuracy = 0.75; // 75%
-      } else { // Hard
-        delay = Math.floor(Math.random() * 2500) + 2000; // 2-4.5s
-        accuracy = 0.95; // 95%
+        delay = Math.floor(Math.random() * 4000) + 4000;
+        accuracy = 0.75;
+      } else {
+        delay = Math.floor(Math.random() * 2500) + 2000;
+        accuracy = 0.95;
       }
 
       botTimer = setTimeout(() => {
@@ -661,12 +703,10 @@
         resultTextEl.innerHTML = `Obtuviste <strong id="final-score">${score}</strong> puntos.`;
       }
 
-      // Guardar en Firebase
       if (window.saveScoreToFirebase) {
         await window.saveScoreToFirebase(score);
       }
 
-      // Cargar Ránking con fotos de perfil
       if (window.loadLeaderboard) {
         const leaderboardHTML = await window.loadLeaderboard();
         document.getElementById('leaderboard-content').innerHTML = leaderboardHTML;
